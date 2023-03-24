@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Form from "./components/Form";
 import PersonList from "./components/PersonList";
 import Search from "./components/Search";
-import axios from 'axios'
+import personService from "./services/persons"
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,9 +12,8 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => setPersons(response.data))
+    personService.getAll()
+      .then(data => setPersons(data))
   }, [])
 
   const handleName = (e) => {
@@ -27,13 +26,24 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const person = {
+      name: newName,
+      number: newNumber,
+    }
+
     if (!newName || !newNumber) return alert("All fields must be filled");
     const exists = persons.find((p) => p.name === newName);
-    if (exists) return alert(`${newName} is already added to phonebook`);
-    setPersons((prev) => [
-      ...prev,
-      { name: newName, number: newNumber, id: prev.length + 1 },
-    ]);
+    if (exists) {
+      if(window.confirm(`${newName} is already added to phonebook. Replace the number with a new one?`)) {
+        personService.updateOne(exists.id, person)
+          .then(newPerson => setPersons(persons.map(p => p.id === newPerson.id ? newPerson : p)))
+      }
+    } else {
+      personService.create(person)
+        .then(newPerson => setPersons(persons.concat(newPerson)))
+    }
+    
     setNewName("");
     setNewNumber("");
   };
@@ -42,6 +52,14 @@ const App = () => {
     setSearch(e.target.value.toLowerCase());
     search ? setShowAll(false) : setShowAll(true);
   };
+
+  const handleDelete = id => {
+    const person = persons.find(p => p.id === id)
+    if(window.confirm(`Do you want to delete ${person.name}?`)) {
+      personService.deleteOne(id)
+        .then(() => setPersons(persons.filter(p => p.id !== id)))
+    }
+  }
 
   return (
     <div>
@@ -56,7 +74,7 @@ const App = () => {
         handleNumber={handleNumber}
       />
       <h2>Numbers</h2>
-      <PersonList persons={persons} showAll={showAll} search={search} />
+      <PersonList persons={persons} showAll={showAll} search={search} handleDelete={handleDelete} />
     </div>
   );
 };

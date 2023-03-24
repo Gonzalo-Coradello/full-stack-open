@@ -7,7 +7,7 @@
     },
     {
       "name": "Ada Lovelace",
-      "number": "39-44-5323523",
+      "number": "39-44-5323522",
       "id": 2
     },
     {
@@ -17,8 +17,18 @@
     },
     {
       "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
+      "number": "14-8741679",
+      "id": 7
+    },
+    {
+      "name": "Full Stack Open",
+      "number": "12-7628943",
+      "id": 8
+    },
+    {
+      "name": "Gonzalo Coradello",
+      "number": "87-6543210",
+      "id": 9
     }
   ]
 }
