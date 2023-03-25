@@ -1,0 +1,16 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+ul {
+  display: grid;
+  justify-content: center;
+}
+
+li {
+  width: fit-content;
+  padding-inline: 1rem;
+}
