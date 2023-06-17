@@ -2,23 +2,23 @@ const Blog = require("../models/blog");
 
 const initialBlogs = [
   {
-    title: 'Test blog',
-    author: 'Gonzalo',
-    url: 'http://localhost:3001/api/blogs',
+    title: 'The importance of testing',
+    author: 'Gonzalo Coradello',
+    url: 'http://localhost:3001/api/blogs/1',
     likes: 2,
   },
   {
-    title: 'Test blog 2',
-    author: 'Gonzalo',
-    url: 'http://localhost:3001/api/blogs',
+    title: 'How to test the backend with Jest and Supertest',
+    author: 'Gonzalo Coradello',
+    url: 'http://localhost:3001/api/blogs/2',
     likes: 5,
   },
 ]
 
 const newBlog = {
-  title: 'Test blog 3',
-  author: 'Gonzalo',
-  url: 'http://localhost:3001/api/blogs',
+  title: 'Using async/await in JavaScript',
+  author: 'Gonzalo Coradello',
+  url: 'http://localhost:3001/api/blogs/3',
   likes: 0,
 }
 
@@ -36,5 +36,5 @@ const blogsInDb = async () => {
 }
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb
+  initialBlogs, newBlog, nonExistingId, blogsInDb
 }

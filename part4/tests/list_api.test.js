@@ -45,38 +45,53 @@ describe('GET blogs', () => {
 
 describe('POST blogs', () => {
 
-  const newBlog = {
-    title: 'Test blog 3',
-    author: 'Gonzalo',
-    url: 'http://localhost:3001/api/blogs',
-    likes: 0,
-  }
-
   test('a blog is successfully created', async () => {
     await api
       .post('/api/blogs')
-      .send(newBlog)
+      .send(helper.newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-
 
     const blogsAtEnd = await helper.blogsInDb()
     const blogsWithoutId = blogsAtEnd.map(({ title, author, url, likes }) => ({ title, author, url, likes }))
 
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
-    expect(blogsWithoutId).toContainEqual(newBlog)
+    expect(blogsWithoutId).toContainEqual(helper.newBlog)
   })
 
-  test('a blog with missing content is not added', async () => {
+  test('the likes property defaults to 0 when it is missing', async () => {
     const newBlog = {
-      author: 'Gonzalo',
-      url: 'http://localhost:3001/api/blogs'
+      title: 'Red, green, refactor',
+      author: 'Gonzalo Coradello',
+      url: 'http://localhost:3001/api/blogs/4'
+    }
+
+    const response = await api.post('/api/blogs').send(newBlog)
+    expect(response.body.likes).toEqual(0)
+  })
+  
+  test('a blog with missing content is not added', async () => {
+    const blogWithoutTitle = {
+      author: 'Gonzalo Coradello',
+      url: 'http://localhost:3001/api/blogs',
+      likes: 0
+    }
+
+    const blogWithoutUrl = {
+      title: 'Testing is fun',
+      author: 'Gonzalo Coradello',
+      likes: 1
     }
 
     await api
       .post('/api/blogs')
-      .send(newBlog)
+      .send(blogWithoutTitle)
       .expect(400)
+      
+    await api
+    .post('/api/blogs')
+    .send(blogWithoutUrl)
+    .expect(400)
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
