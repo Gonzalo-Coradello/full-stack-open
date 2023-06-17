@@ -15,7 +15,7 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
 }, 100000)
 
-describe('GET blogs', () => {
+describe('when there is initially some blogs saved', () => {
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -43,9 +43,36 @@ describe('GET blogs', () => {
   })
 })
 
-describe('POST blogs', () => {
+describe('viewing a specific blog', () => {
+  test('succeeds with a valid id', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blog = blogsAtStart[0]
+    
+    const response = await api
+      .get(`/api/blogs/${blog.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  test('a blog is successfully created', async () => {
+    expect(response.body).toEqual(blog)
+  })
+
+  test('fails with statuscode 404 if note does not exist', async () => {
+    await api
+      .get(`/api/blogs/${await helper.nonExistingId()}`)
+      .expect(404)
+  })
+
+  test('fails with statuscode 400 if id is invalid', async () => {
+    const invalidId = '5a3d5da59070081a82a3445'
+
+    await api
+      .get(`/api/blogs/${invalidId}`)
+      .expect(400)
+  })
+})
+
+describe('addition of a new blog', () => {
+  test('succeeds with valid data', async () => {
     await api
       .post('/api/blogs')
       .send(helper.newBlog)
@@ -59,7 +86,7 @@ describe('POST blogs', () => {
     expect(blogsWithoutId).toContainEqual(helper.newBlog)
   })
 
-  test('the likes property defaults to 0 when it is missing', async () => {
+  test('adds the likes property with the default value of 0 when it is missing', async () => {
     const newBlog = {
       title: 'Red, green, refactor',
       author: 'Gonzalo Coradello',
@@ -69,8 +96,8 @@ describe('POST blogs', () => {
     const response = await api.post('/api/blogs').send(newBlog)
     expect(response.body.likes).toEqual(0)
   })
-  
-  test('a blog with missing content is not added', async () => {
+
+  test('fails with status code 400 when data is missing', async () => {
     const blogWithoutTitle = {
       author: 'Gonzalo Coradello',
       url: 'http://localhost:3001/api/blogs',
@@ -95,6 +122,66 @@ describe('POST blogs', () => {
 
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+})
+
+describe('deletion of a blog', () => {
+  test('succeeds with status 204 when the blog is found', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    
+    await api
+      .delete(`/api/blogs/${blogsAtStart[0].id}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+  })
+
+  test('fails with status 404 when the id is not found', async () => {    
+    await api
+      .delete(`/api/blogs/${await helper.nonExistingId()}`)
+      .expect(404)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+})
+
+describe('updating a blog', () => {
+  test('succeeds with valid id and data', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const response = await api
+      .put(`/api/blogs/${blogsAtStart[0].id}`)
+      .send({ likes: 10 })
+      .expect(200)
+
+    expect(response.body.likes).toEqual(10)
+  })
+
+  test('fails with status 400 when data is invalid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    await api
+      .put(`/api/blogs/${blogsAtStart[0].id}`)
+      .send({ likes: 'Hello' })
+      .expect(400)
+  })
+
+  test('fails with status 404 when the id is not found', async () => {
+    await api
+      .put(`/api/blogs/${await helper.nonExistingId()}`)
+      .send({ likes: 10 })
+      .expect(404)
+  })
+
+  test('fails with status 400 when the id is invalid', async () => {
+    const invalidId = '5a3d5da59070081a82a3445'
+
+    await api
+      .put(`/api/blogs/${invalidId}`)
+      .send({ likes: 10 })
+      .expect(400)
   })
 })
 
