@@ -2,29 +2,15 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const helper = require('./test_helper')
 
 const api = supertest(app)
 mongoose.set('bufferTimeoutMS', 30000)
 
-const initialBlogs = [
-  {
-    title: 'Test blog',
-    author: 'Gonzalo',
-    url: 'http://localhost:3001/api/blogs',
-    likes: 2,
-  },
-  {
-    title: 'Test blog 2',
-    author: 'Gonzalo',
-    url: 'http://localhost:3001/api/blogs',
-    likes: 5,
-  },
-]
-
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  const blogObjects = initialBlogs.map(blog => new Blog(blog))
+  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
 }, 100000)
@@ -37,15 +23,23 @@ describe('GET blogs', () => {
       .expect('Content-Type', /application\/json/)
   }, 100000)
 
-  test('all the blogs are returned', async () => {
+  test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(initialBlogs.length)
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 
   test('the unique identifier property is named id', async () => {
     const result = await api.get('/api/blogs')
 
     expect(result.body[0].id).toBeDefined()
+  })
+
+  test('a specific blog is within the returned blogs', async () => {
+    const response = await api.get('/api/blogs')
+
+    const blogsWithoutId = response.body.map(({ title, author, url, likes }) => ({ title, author, url, likes }))
+
+    expect(blogsWithoutId).toContainEqual(helper.initialBlogs[0])
   })
 })
 
@@ -65,11 +59,12 @@ describe('POST blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const titles = response.body.map(blog => blog.title)
 
-    expect(response.body).toHaveLength(initialBlogs.length + 1)
-    expect(titles).toContain('Test blog 3')
+    const blogsAtEnd = await helper.blogsInDb()
+    const blogsWithoutId = blogsAtEnd.map(({ title, author, url, likes }) => ({ title, author, url, likes }))
+
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+    expect(blogsWithoutId).toContainEqual(newBlog)
   })
 
   test('a blog with missing content is not added', async () => {
@@ -83,8 +78,8 @@ describe('POST blogs', () => {
       .send(newBlog)
       .expect(400)
 
-    const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(initialBlogs.length)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 })
 
