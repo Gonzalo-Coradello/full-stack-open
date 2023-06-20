@@ -23,7 +23,7 @@ blogsRouter.post('/', async (request, response) => {
   const decodedToken = jwt.verify(request.token, config.JWT_SECRET)
 
   if(!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
+    return response.status(401).json({ error: 'Invalid token' })
   }
 
   const user = await User.findById(decodedToken.id)
@@ -42,10 +42,27 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
   const id = request.params.id
-  const result = await Blog.findByIdAndRemove(id)
-  if(!result) {
-    response.status(404).end()
+  const decodedToken = jwt.verify(request.token, config.JWT_SECRET)
+
+  if(!decodedToken.id) {
+    return response.status(401).json({ error: 'Invalid token' })
   }
+
+  const user = await User.findById(decodedToken.id)
+  const blog = await Blog.findById(id)
+
+  if(!blog) {
+    return response.status(404).end()
+  }
+
+  console.log(blog.user.toString())
+  console.log(user._id.toString())
+
+  if(blog.user.toString() !== user._id.toString()) {
+    return response.status(403).json({ error: 'You can only delete your own blogs' })
+  }
+
+  await Blog.deleteOne({ _id: blog.id })
   response.status(204).end()
 })
 
