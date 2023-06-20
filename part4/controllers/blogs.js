@@ -45,9 +45,6 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
     return response.status(404).end()
   }
 
-  console.log(blog.user.toString())
-  console.log(user._id.toString())
-
   if(blog.user.toString() !== user._id.toString()) {
     return response.status(403).json({ error: 'You can only delete your own blogs' })
   }
@@ -59,6 +56,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 blogsRouter.put('/:id', userExtractor, async (request, response) => {
   const id = request.params.id
   const data = request.body
+  const user = request.user
 
   const blogToUpdate = await Blog.findOne({ _id: id})
 
@@ -66,11 +64,15 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
     return response.status(404).end()
   }
 
+  if(blogToUpdate.user.toString() !== user._id.toString()) {
+    return response.status(403).json({ error: 'You can only modify your own blogs' })
+  }
+
   const newBlog = {
     ...blogToUpdate.doc,
     ...data
   }
-  
+
   const updatedBlog = await Blog.findByIdAndUpdate(id, newBlog, { new: true })
   response.json(updatedBlog)
 })
