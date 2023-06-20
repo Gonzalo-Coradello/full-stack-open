@@ -2,8 +2,7 @@ POST http://localhost:3001/api/blogs
 content-type: application/json
 
 {
-  "title": "Test blog",
-  "author": "Gonzalo",
-  "url": "http://localhost:3001/api/blogs",
-  "likes": 2
+  "title": "The importance of testing",
+  "author": "Gonzalo Coradello",
+  "url": "http://localhost:3001/api/blogs/1"
 }

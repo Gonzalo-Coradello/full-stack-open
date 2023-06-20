@@ -46,7 +46,7 @@ describe('when there is initially one user in db', () => {
     const newUser = {
       username: 'root',
       name: 'Superuser',
-      password: 'salainen'
+      password: 'salainen',
     }
 
     const result = await api
@@ -64,7 +64,7 @@ describe('when there is initially one user in db', () => {
   test('creation fails if the username is not valid', async () => {
     const newUser = {
       username: 'hi :)',
-      password: '123456'
+      password: '123456',
     }
 
     const result = await api
@@ -72,8 +72,23 @@ describe('when there is initially one user in db', () => {
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-      
+
     expect(result.body.error).toContain('hi :) is not a valid username')
+  })
+
+  test('creation fails if the password is not valid', async () => {
+    const newUser = {
+      username: 'user123',
+      password: '11',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Password must be at least three characters long')
   })
 }, 100000)
 

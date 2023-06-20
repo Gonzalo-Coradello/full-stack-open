@@ -8,14 +8,14 @@ const blogSchema = new mongoose.Schema({
     minLength: 5
   },
   author: {
+    type: String,
+    required: true,
+    minLength: 5
+  },
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  // author: {
-  //   type: String,
-  //   required: true,
-  //   minLength: 5
-  // },
   url: {
     type: String,
     required: true,
