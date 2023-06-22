@@ -59,6 +59,7 @@ const App = () => {
   const createBlog = async (data) => {
     try {
     const newBlog = await blogService.create(data)
+    console.log(newBlog)
     setBlogs(prev => prev.concat(newBlog))
     setNotificationMessage(`New blog "${newBlog.title}" by ${newBlog.author} created`)
   } catch (exception) {
