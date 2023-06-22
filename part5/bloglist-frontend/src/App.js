@@ -6,14 +6,10 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null);
   const [notificationStatus, setNotificationStatus] = useState('success')
@@ -31,18 +27,12 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async e => {
-    e.preventDefault()
-
+  const handleLogin = async data => {
     try {
-      const user = await loginService.login({
-        username, password
-      })
+      const user = await loginService.login(data)
       blogService.setToken(user.token)
       window.localStorage.setItem('user', JSON.stringify(user))
       setUser(user)
-      setUsername('')
-      setPassword('')
       setNotificationMessage(`${user.name} logged in`)
     } catch (exception) {
       setNotificationStatus('error')
@@ -66,18 +56,10 @@ const App = () => {
     }, 5000)
   }
 
-  const handleCreate = async e => {
-    e.preventDefault()
+  const createBlog = async (data) => {
     try {
-      const data = {
-      title, author, url
-    }
-
     const newBlog = await blogService.create(data)
     setBlogs(prev => prev.concat(newBlog))
-    setTitle('')
-    setAuthor('')
-    setUrl('')
     setNotificationMessage(`New blog "${newBlog.title}" by ${newBlog.author} created`)
   } catch (exception) {
     setNotificationStatus('error')
@@ -95,7 +77,7 @@ const App = () => {
       <div>
         <Notification status={notificationStatus} message={notificationMessage} />
         <h2>Log in</h2>
-        <LoginForm handleLogin={handleLogin} username={username} password={password} setUsername={setUsername} setPassword={setPassword} />
+        <LoginForm handleLogin={handleLogin} />
       </div>
     )
   }
@@ -108,7 +90,9 @@ const App = () => {
         <p>{user.name} logged in</p>
         <button onClick={handleLogout}>logout</button>
       </div> }
-      <BlogForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreate={handleCreate} />
+      <Togglable buttonLabel='new note'>
+        <BlogForm createBlog={createBlog} />
+      </Togglable>
       {blogs.map(blog => (
         <Blog key={blog.id} blog={blog} />
       ))}
