@@ -1,9 +1,11 @@
+import './index.css'
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,8 +14,9 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  // const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationStatus, setNotificationStatus] = useState('success')
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -40,19 +43,27 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setNotificationMessage(`${user.name} logged in`)
     } catch (exception) {
-      console.log(exception)
-      // setErrorMessage('Wrong credentials')
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
+      setNotificationStatus('error')
+      setNotificationMessage('Wrong credentials')
+    } finally {
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationStatus('success')
+      }, 5000)
     }
   } 
 
   const handleLogout = e => {
     e.preventDefault()
+    const name = user.name
     window.localStorage.removeItem('user')
     setUser(null)
+    setNotificationMessage(`${name} logged out`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
   }
 
   const handleCreate = async e => {
@@ -67,19 +78,22 @@ const App = () => {
     setTitle('')
     setAuthor('')
     setUrl('')
-    
+    setNotificationMessage(`New blog "${newBlog.title}" by ${newBlog.author} created`)
   } catch (exception) {
-    console.log(exception)
-    // setErrorMessage('Wrong credentials')
-    // setTimeout(() => {
-    //   setErrorMessage(null)
-    // }, 5000)
+    setNotificationStatus('error')
+    setNotificationMessage(exception.response.data.error)
+  } finally {
+    setTimeout(() => {
+      setNotificationMessage(null)
+      setNotificationStatus('success')
+    }, 5000)
   }
   }
 
   if (user === null) {
     return (
       <div>
+        <Notification status={notificationStatus} message={notificationMessage} />
         <h2>Log in</h2>
         <LoginForm handleLogin={handleLogin} username={username} password={password} setUsername={setUsername} setPassword={setPassword} />
       </div>
@@ -88,6 +102,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification status={notificationStatus} message={notificationMessage} />
       <h2>blogs</h2>
       { user && <div>
         <p>{user.name} logged in</p>
