@@ -1,5 +1,5 @@
 import './index.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -13,6 +13,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationStatus, setNotificationStatus] = useState('success')
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs.sort((a, b) => a.likes < b.likes)))
@@ -58,6 +59,7 @@ const App = () => {
 
   const createBlog = async data => {
     try {
+      blogFormRef.current.toggleVisibility()
       const newBlog = await blogService.create(data)
       setBlogs(prev => prev.concat(newBlog))
       setNotificationMessage(
@@ -129,7 +131,7 @@ const App = () => {
           <button onClick={handleLogout}>logout</button>
         </div>
       )}
-      <Togglable buttonLabel='new note'>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map(blog => (
