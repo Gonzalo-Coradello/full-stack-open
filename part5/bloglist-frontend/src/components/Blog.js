@@ -1,10 +1,9 @@
 import { useState } from 'react'
 
-const Blog = ({
-  blog: { id, title, author, url, likes, user },
-  handleUpdate,
-  handleDelete,
-}) => {
+const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
+  const { id, title, author, likes, url } = blog
+  const blogUser = blog.user
+
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -25,13 +24,11 @@ const Blog = ({
   // mantains the original information and only updates the data that we pass it.
   // I used the spread operator { ...originalBlog, newData }
   const addLike = () => {
-    if(window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
-      handleUpdate(id, { likes: likes + 1 })
-    }
+    handleUpdate(id, { likes: likes + 1 })
   }
 
   const deleteBlog = () => {
-    if(window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
+    if (window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
       handleDelete(id)
     }
   }
@@ -48,10 +45,12 @@ const Blog = ({
           likes: {likes}
           <button onClick={addLike}>like</button>
         </div>
-        {user.name}
-        <button onClick={deleteBlog} style={{ display: 'block' }}>
-          remove
-        </button>
+        {blogUser.name}
+        {blogUser.name === user.name && (
+          <button onClick={deleteBlog} style={{ display: 'block' }}>
+            remove
+          </button>
+        )}
       </div>
     </div>
   )

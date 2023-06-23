@@ -78,7 +78,7 @@ const App = () => {
     try {
       const updatedBlog = await blogService.update(id, data)
       setBlogs(prev => prev.map(blog => blog.id === id ? updatedBlog : blog).sort((a, b) => a.likes < b.likes))
-      setNotificationMessage(`Blog "${updatedBlog.title}" by ${updatedBlog.author} updated`)
+      // setNotificationMessage(`Blog "${updatedBlog.title}" by ${updatedBlog.author} updated`)
     } catch (exception) {
       setNotificationStatus('error')
       setNotificationMessage(exception.response.data.error)
@@ -133,7 +133,7 @@ const App = () => {
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} handleUpdate={updateBlog} handleDelete={deleteBlog} />
+        <Blog key={blog.id} blog={blog} user={user} handleUpdate={updateBlog} handleDelete={deleteBlog} />
       ))}
     </div>
   )
