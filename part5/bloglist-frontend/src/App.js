@@ -11,11 +11,11 @@ import Togglable from './components/Togglable'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationStatus, setNotificationStatus] = useState('success')
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs))
+    blogService.getAll().then(blogs => setBlogs(blogs.sort((a, b) => a.likes < b.likes)))
   }, [])
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const App = () => {
         setNotificationStatus('success')
       }, 5000)
     }
-  } 
+  }
 
   const handleLogout = e => {
     e.preventDefault()
@@ -56,27 +56,63 @@ const App = () => {
     }, 5000)
   }
 
-  const createBlog = async (data) => {
+  const createBlog = async data => {
     try {
-    const newBlog = await blogService.create(data)
-    console.log(newBlog)
-    setBlogs(prev => prev.concat(newBlog))
-    setNotificationMessage(`New blog "${newBlog.title}" by ${newBlog.author} created`)
-  } catch (exception) {
-    setNotificationStatus('error')
-    setNotificationMessage(exception.response.data.error)
-  } finally {
-    setTimeout(() => {
-      setNotificationMessage(null)
-      setNotificationStatus('success')
-    }, 5000)
+      const newBlog = await blogService.create(data)
+      setBlogs(prev => prev.concat(newBlog))
+      setNotificationMessage(
+        `New blog "${newBlog.title}" by ${newBlog.author} created`
+      )
+    } catch (exception) {
+      setNotificationStatus('error')
+      setNotificationMessage(exception.response.data.error)
+    } finally {
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationStatus('success')
+      }, 5000)
+    }
   }
+
+  const updateBlog = async (id, data) => {
+    try {
+      const updatedBlog = await blogService.update(id, data)
+      setBlogs(prev => prev.map(blog => blog.id === id ? updatedBlog : blog).sort((a, b) => a.likes < b.likes))
+      setNotificationMessage(`Blog "${updatedBlog.title}" by ${updatedBlog.author} updated`)
+    } catch (exception) {
+      setNotificationStatus('error')
+      setNotificationMessage(exception.response.data.error)
+    } finally {
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationStatus('success')
+      }, 5000)
+    }
+  }
+
+  const deleteBlog = async id => {
+    try {
+      await blogService.deleteBlog(id)
+      setBlogs(prev => prev.filter(b => b.id !== id))
+      setNotificationMessage('Blog deleted')
+    } catch (exception) {
+      setNotificationStatus('error')
+      setNotificationMessage(exception.response.data.error)
+    } finally {
+      setTimeout(() => {
+        setNotificationMessage(null)
+        setNotificationStatus('success')
+      }, 5000)
+    }
   }
 
   if (user === null) {
     return (
       <div>
-        <Notification status={notificationStatus} message={notificationMessage} />
+        <Notification
+          status={notificationStatus}
+          message={notificationMessage}
+        />
         <h2>Log in</h2>
         <LoginForm handleLogin={handleLogin} />
       </div>
@@ -87,15 +123,17 @@ const App = () => {
     <div>
       <Notification status={notificationStatus} message={notificationMessage} />
       <h2>blogs</h2>
-      { user && <div>
-        <p>{user.name} logged in</p>
-        <button onClick={handleLogout}>logout</button>
-      </div> }
+      {user && (
+        <div>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>logout</button>
+        </div>
+      )}
       <Togglable buttonLabel='new note'>
         <BlogForm createBlog={createBlog} />
       </Togglable>
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleUpdate={updateBlog} handleDelete={deleteBlog} />
       ))}
     </div>
   )

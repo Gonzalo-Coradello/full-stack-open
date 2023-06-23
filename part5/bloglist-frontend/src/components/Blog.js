@@ -1,8 +1,12 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const Blog = ({ blog: { title, author, url, likes, user } }) => {
+const Blog = ({
+  blog: { id, title, author, url, likes, user },
+  handleUpdate,
+  handleDelete,
+}) => {
   const [visible, setVisible] = useState(false)
- 
+
   const toggleVisibility = () => {
     setVisible(!visible)
   }
@@ -17,19 +21,37 @@ const Blog = ({ blog: { title, author, url, likes, user } }) => {
 
   const showWhenVisible = { display: visible ? '' : 'none' }
 
+  // Note: I implemented the update functionality on the backend so that it
+  // mantains the original information and only updates the data that we pass it.
+  // I used the spread operator { ...originalBlog, newData }
+  const addLike = () => {
+    if(window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
+      handleUpdate(id, { likes: likes + 1 })
+    }
+  }
+
+  const deleteBlog = () => {
+    if(window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
+      handleDelete(id)
+    }
+  }
+
   return (
     <div style={blogStyle}>
       <div>
-        { title } - { author }
-        <button onClick={toggleVisibility}>{ visible ? 'hide' : 'view' }</button>
+        {title} - {author}
+        <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
       </div>
       <div style={showWhenVisible}>
-        { url }
+        {url}
         <div>
-          likes: { likes }
-          <button>like</button>
+          likes: {likes}
+          <button onClick={addLike}>like</button>
         </div>
-        { user.name }
+        {user.name}
+        <button onClick={deleteBlog} style={{ display: 'block' }}>
+          remove
+        </button>
       </div>
     </div>
   )
