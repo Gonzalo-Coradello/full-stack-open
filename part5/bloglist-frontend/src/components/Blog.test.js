@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
-
   let container
 
   const blog = {
@@ -51,7 +50,9 @@ describe('<Blog />', () => {
     const user = userEvent.setup()
     await user.click(button)
 
-    const url = screen.findByText('http://localhost:3001/api/blogs/11')
+    const url = screen.getByText('http://localhost:3001/api/blogs/11', {
+      exact: false,
+    })
     const likes = screen.getByText('likes: 0')
 
     expect(url).toBeDefined()
