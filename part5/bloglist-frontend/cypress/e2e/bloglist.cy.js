@@ -1,30 +1,30 @@
-describe('Blog app', function() {
-  beforeEach(function() {
-    cy.request('POST', 'http://localhost:3001/api/testing/reset')
+describe('Blog app', function () {
+  beforeEach(function () {
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
 
     const user = {
       name: 'Gonzalo Coradello',
       username: 'gonzaloc',
-      password: 'secret'
+      password: 'secret',
     }
 
     const otherUser = {
       name: 'Matti Luukkainen',
       username: 'mluukkai',
-      password: 'salainen'
+      password: 'salainen',
     }
 
-    cy.request('POST', 'http://localhost:3001/api/users/', user)
-    cy.request('POST', 'http://localhost:3001/api/users/', otherUser)
-    cy.visit('http://localhost:3000')
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, otherUser)
+    cy.visit('')
   })
 
-  it('login form is shown', function() {
+  it('login form is shown', function () {
     cy.contains('Log in')
   })
 
-  describe('Login', function() {
-    it('succeeds with correct credentials', function() {
+  describe('Login', function () {
+    it('succeeds with correct credentials', function () {
       cy.get('#username').type('gonzaloc')
       cy.get('#password').type('secret')
       cy.get('button').click()
@@ -32,7 +32,7 @@ describe('Blog app', function() {
       cy.contains('Gonzalo Coradello logged in')
     })
 
-    it('fails with wrong credentials', function() {
+    it('fails with wrong credentials', function () {
       cy.get('#username').type('gonzaloc')
       cy.get('#password').type('wrong')
       cy.get('button').click()
@@ -43,84 +43,66 @@ describe('Blog app', function() {
     })
   })
 
-  describe('When logged in', function() {
-    beforeEach(function() {
-      cy.request('POST', 'http://localhost:3001/api/login', { username: 'gonzaloc', password: 'secret' })
-        .then(response => localStorage.setItem('user', JSON.stringify(response.body)))
-
-      cy.visit('http://localhost:3000')
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'gonzaloc', password: 'secret' })
     })
 
-    it('a blog can be created', function() {
+    it('a blog can be created', function () {
       cy.contains('new blog').click()
-      cy.get('input[placeholder="write blog title here"]')
-        .type('End to End testing with Cypress')
-      cy.get('input[placeholder="John Doe"]')
-        .type('Gonzalo Coradello')
-      cy.get('input[placeholder="https://yoursite.com"]')
-        .type('http://localhost:3001/api/blogs/13')
+      cy.get('input[name="Title"]').type('End to End testing with Cypress')
+      cy.get('input[name="Author"]').type('Gonzalo Coradello')
+      cy.get('input[name="Url"]').type('http://localhost:3001/api/blogs/13')
       cy.contains('create').click()
 
       cy.contains('End to End testing with Cypress - Gonzalo Coradello')
       cy.get('.success')
-        .should('contain', 'New blog "End to End testing with Cypress" by Gonzalo Coradello created')
+        .should(
+          'contain',
+          'New blog "End to End testing with Cypress" by Gonzalo Coradello created'
+        )
         .and('have.css', 'color', 'rgb(0, 128, 0)')
     })
 
-    describe('When there are blogs in the list', function() {
-      beforeEach(function() {
-        cy.request({
-          url: 'http://localhost:3001/api/blogs',
-          method: 'POST',
-          body: {
-            title: 'End to End testing with Cypress',
-            author: 'Gonzalo Coradello',
-            url: 'http://localhost:3001/api/blogs/13'
-          },
-          headers: {
-            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')).token}`
-          }
+    describe('When there are blogs in the list', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'End to End testing with Cypress',
+          author: 'Gonzalo Coradello',
+          url: 'http://localhost:3001/api/blogs/13',
         })
-        
-        cy.request({
-          url: 'http://localhost:3001/api/blogs',
-          method: 'POST',
-          body: {
-            title: 'Differences between unit, integration and E2E testing',
-            author: 'Gonzalo Coradello',
-            url: 'http://localhost:3001/api/blogs/14'
-          },
-          headers: {
-            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')).token}`
-          }
+        cy.createBlog({
+          title: 'Differences between unit, integration and E2E testing',
+          author: 'Gonzalo Coradello',
+          url: 'http://localhost:3001/api/blogs/14',
         })
-  
-        cy.visit('http://localhost:3000')
       })
-  
-      it('users can like a blog', function() {
-        cy.contains('view').click()
+
+      it('users can like a blog', function () {
+        cy.contains('End to End testing with Cypress - Gonzalo Coradello')
+          .contains('view')
+          .click()
         cy.contains('like').click()
         cy.contains('likes: 1')
       })
 
-      it('the user who created the blog can delete it', function() {
-        cy.contains('view').click()
+      it('the user who created the blog can delete it', function () {
+        cy.contains('End to End testing with Cypress - Gonzalo Coradello').as('firstBlog')
+        cy.get('@firstBlog')
+          .contains('view')
+          .click()
         cy.contains('remove').click()
         cy.on('window:confirm', () => true)
-        cy.contains('End to End testing with Cypress - Gonzalo Coradello').should('not.exist')
+        cy.get('@firstBlog').should('not.exist')
         cy.contains('Blog deleted')
       })
 
-      describe('When a different user is logged in', function() {
-        beforeEach(function() {
-          cy.request('POST', 'http://localhost:3001/api/login', { username: 'mluukkai', password: 'salainen' })
-            .then(response => localStorage.setItem('user', JSON.stringify(response.body)))
-
-          cy.visit('http://localhost:3000')
+      describe('When a different user is logged in', function () {
+        beforeEach(function () {
+          cy.login({ username: 'mluukkai', password: 'salainen' })
         })
 
-        it.only('should not see the delete button', function() {
+        it('should not see the delete button', function () {
           cy.contains('view').click()
           cy.contains('remove').should('not.exist')
         })
