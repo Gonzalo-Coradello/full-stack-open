@@ -16,7 +16,10 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs.sort((a, b) => a.likes < b.likes)))
+    (async () => {
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+    })()
   }, [])
 
   useEffect(() => {
@@ -79,7 +82,7 @@ const App = () => {
   const updateBlog = async (id, data) => {
     try {
       const updatedBlog = await blogService.update(id, data)
-      setBlogs(prev => prev.map(blog => blog.id === id ? updatedBlog : blog).sort((a, b) => a.likes < b.likes))
+      setBlogs(prev => prev.map(blog => blog.id === id ? updatedBlog : blog))
       // setNotificationMessage(`Blog "${updatedBlog.title}" by ${updatedBlog.author} updated`)
     } catch (exception) {
       setNotificationStatus('error')
@@ -134,8 +137,14 @@ const App = () => {
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm createBlog={createBlog} />
       </Togglable>
-      {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} user={user} handleUpdate={updateBlog} handleDelete={deleteBlog} />
+      {blogs.sort((a, b) => b.likes - a.likes).map(blog => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          user={user}
+          handleUpdate={updateBlog}
+          handleDelete={deleteBlog}
+        />
       ))}
     </div>
   )
