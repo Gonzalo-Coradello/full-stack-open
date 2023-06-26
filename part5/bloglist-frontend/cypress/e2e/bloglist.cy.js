@@ -87,14 +87,41 @@ describe('Blog app', function () {
       })
 
       it('the user who created the blog can delete it', function () {
-        cy.contains('End to End testing with Cypress - Gonzalo Coradello').as('firstBlog')
-        cy.get('@firstBlog')
-          .contains('view')
-          .click()
+        cy.contains('End to End testing with Cypress - Gonzalo Coradello').as(
+          'firstBlog'
+        )
+        cy.get('@firstBlog').contains('view').click()
         cy.contains('remove').click()
         cy.on('window:confirm', () => true)
         cy.get('@firstBlog').should('not.exist')
         cy.contains('Blog deleted')
+      })
+
+      it('blogs are ordered according to likes', function () {
+        const firstBlogTitle = 'End to End testing with Cypress'
+        const secondBlogTitle =
+          'Differences between unit, integration and E2E testing'
+
+        cy.get('.blog').eq(0).should('contain', firstBlogTitle)
+        cy.get('.blog').eq(1).should('contain', secondBlogTitle)
+
+        cy.contains(secondBlogTitle).contains('view').click()
+        cy.contains(secondBlogTitle)
+          .parent()
+          .contains('like')
+          .click()
+          .wait(1000)
+          .click()
+          .wait(1000)
+
+        cy.get('.blog')
+          .eq(0)
+          .should('contain', secondBlogTitle)
+          .and('contain', 'likes: 2')
+        cy.get('.blog')
+          .eq(1)
+          .should('contain', firstBlogTitle)
+          .and('contain', 'likes: 0')
       })
 
       describe('When a different user is logged in', function () {
