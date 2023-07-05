@@ -8,7 +8,7 @@
     {
       "content": "Adding manpower to a late software project makes it later!",
       "id": "21149",
-      "votes": 4
+      "votes": 5
     },
     {
       "content": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
@@ -27,7 +27,7 @@
     },
     {
       "content": "Creating a new anecdote with React Query",
-      "votes": 1,
+      "votes": 2,
       "id": "5nFoDSI"
     },
     {
@@ -44,6 +44,11 @@
       "content": "Testing if the application works correctly",
       "votes": 1,
       "id": "GBimHZM"
+    },
+    {
+      "content": "Implementing context and useReducer",
+      "votes": 0,
+      "id": "rd_6Qhz"
     }
   ]
 }

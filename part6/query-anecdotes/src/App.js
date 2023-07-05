@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { getAnecdotes, updateAnecdote } from './services/requests'
+import { useNotificationDispatch } from './context/NotificationContext'
 
 const App = () => {
   const queryClient = useQueryClient()
@@ -15,6 +16,8 @@ const App = () => {
     },
   })
 
+  const setNotification = useNotificationDispatch()
+
   const {
     isLoading,
     isError,
@@ -26,9 +29,8 @@ const App = () => {
 
   const handleVote = anecdote => {
     mutation.mutate({ ...anecdote, votes: anecdote.votes + 1 })
+    setNotification(`you voted '${anecdote.content}'`)
   }
-
-  console.log('rendering...')
 
   if (isLoading) {
     return <div>loading data...</div>
