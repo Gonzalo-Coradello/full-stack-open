@@ -3,15 +3,18 @@ import { createAnecdote } from '../services/requests'
 import { useNotificationDispatch } from '../context/NotificationContext'
 
 const AnecdoteForm = () => {
+  const setNotification = useNotificationDispatch()
+
   const queryClient = useQueryClient()
   const mutation = useMutation(createAnecdote, {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData('anecdotes')
       queryClient.setQueryData('anecdotes', anecdotes.concat(newAnecdote))
     },
+    onError: () => {
+      setNotification('error: anecdotes must be at least 5 characters long')
+    }
   })
-
-  const setNotification = useNotificationDispatch()
 
   const onCreate = event => {
     event.preventDefault()
