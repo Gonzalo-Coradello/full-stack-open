@@ -5,7 +5,7 @@ const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const login = e => {
+  const login = (e) => {
     e.preventDefault()
     handleLogin({ username, password })
     setUsername('')
@@ -17,24 +17,24 @@ const LoginForm = ({ handleLogin }) => {
       <div>
         username
         <input
-          id='username'
-          type='text'
+          id="username"
+          type="text"
           value={username}
-          name='Username'
+          name="Username"
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
       <div>
         password
         <input
-          id='password'
-          type='password'
+          id="password"
+          type="password"
           value={password}
-          name='Password'
+          name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type='submit'>login</button>
+      <button type="submit">login</button>
     </form>
   )
 }

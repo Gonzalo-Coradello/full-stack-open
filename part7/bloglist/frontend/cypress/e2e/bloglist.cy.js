@@ -59,7 +59,7 @@ describe('Blog app', function () {
       cy.get('.success')
         .should(
           'contain',
-          'New blog "End to End testing with Cypress" by Gonzalo Coradello created'
+          'New blog "End to End testing with Cypress" by Gonzalo Coradello created',
         )
         .and('have.css', 'color', 'rgb(0, 128, 0)')
     })
@@ -88,7 +88,7 @@ describe('Blog app', function () {
 
       it('the user who created the blog can delete it', function () {
         cy.contains('End to End testing with Cypress - Gonzalo Coradello').as(
-          'firstBlog'
+          'firstBlog',
         )
         cy.get('@firstBlog').contains('view').click()
         cy.contains('remove').click()

@@ -5,7 +5,7 @@ const BlogForm = ({ createBlog }) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const addBlog = e => {
+  const addBlog = (e) => {
     e.preventDefault()
     const blogData = { title, author, url }
     createBlog(blogData)
@@ -19,34 +19,34 @@ const BlogForm = ({ createBlog }) => {
       <div>
         title
         <input
-          type='text'
+          type="text"
           value={title}
-          name='Title'
-          placeholder='write blog title here'
+          name="Title"
+          placeholder="write blog title here"
           onChange={({ target }) => setTitle(target.value)}
         />
       </div>
       <div>
         author
         <input
-          type='text'
+          type="text"
           value={author}
-          name='Author'
-          placeholder='John Doe'
+          name="Author"
+          placeholder="John Doe"
           onChange={({ target }) => setAuthor(target.value)}
         />
       </div>
       <div>
         url
         <input
-          type='text'
+          type="text"
           value={url}
-          name='Url'
-          placeholder='https://yoursite.com'
+          name="Url"
+          placeholder="https://yoursite.com"
           onChange={({ target }) => setUrl(target.value)}
         />
       </div>
-      <button type='submit'>create</button>
+      <button type="submit">create</button>
     </form>
   )
 }

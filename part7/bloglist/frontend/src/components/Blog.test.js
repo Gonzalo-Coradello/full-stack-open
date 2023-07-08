@@ -27,7 +27,7 @@ describe('<Blog />', () => {
         user={blogUser}
         handleUpdate={mockHandler}
         handleDelete={mockHandler}
-      />
+      />,
     ).container
   })
 
