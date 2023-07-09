@@ -8,19 +8,24 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { useNotification } from './hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  initializeBlogs,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+} from './reducers/blogReducer'
 
 const App = () => {
+  const blogs = useSelector((state) => state.blogs)
   const { setSuccessNotification, setErrorNotification } = useNotification()
-  const [blogs, setBlogs] = useState([])
+
+  const dispatch = useDispatch()
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
 
   useEffect(() => {
-    const getBlogs = async () => {
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    }
-    getBlogs()
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -52,34 +57,29 @@ const App = () => {
     setSuccessNotification(`${name} logged out`)
   }
 
-  const createBlog = async (data) => {
+  const handleCreate = async (data) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const newBlog = await blogService.create(data)
-      setBlogs((prev) => prev.concat(newBlog))
+      dispatch(createBlog(data))
       setSuccessNotification(
-        `New blog "${newBlog.title}" by ${newBlog.author} created`,
+        `New blog "${data.title}" by ${data.author} created`,
       )
     } catch (exception) {
       setErrorNotification(exception.response.data.error)
     }
   }
 
-  const updateBlog = async (id, data) => {
+  const handleUpdate = async (id, data) => {
     try {
-      const updatedBlog = await blogService.update(id, data)
-      setBlogs((prev) =>
-        prev.map((blog) => (blog.id === id ? updatedBlog : blog)),
-      )
+      dispatch(updateBlog(id, data))
     } catch (exception) {
       setErrorNotification(exception.response.data.error)
     }
   }
 
-  const deleteBlog = async (id) => {
+  const handleDelete = async (id) => {
     try {
-      await blogService.deleteBlog(id)
-      setBlogs((prev) => prev.filter((b) => b.id !== id))
+      dispatch(deleteBlog(id))
       setSuccessNotification('Blog deleted')
     } catch (exception) {
       setErrorNotification(exception.response.data.error)
@@ -107,17 +107,17 @@ const App = () => {
         </div>
       )}
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm createBlog={createBlog} />
+        <BlogForm handleCreate={handleCreate} />
       </Togglable>
-      {blogs
+      {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
             blog={blog}
             user={user}
-            handleUpdate={updateBlog}
-            handleDelete={deleteBlog}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
           />
         ))}
     </div>
