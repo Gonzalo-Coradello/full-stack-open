@@ -3,7 +3,7 @@ import { useField } from '../hooks'
 
 const LoginForm = ({ handleLogin }) => {
   const { reset: resetUsername, ...username } = useField('text')
-  const { reset: resetPassword, ...password } = useField('text')
+  const { reset: resetPassword, ...password } = useField('password')
 
   const login = (e) => {
     e.preventDefault()
