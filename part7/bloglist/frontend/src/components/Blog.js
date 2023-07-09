@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
-import { updateBlog } from '../reducers/blogReducer'
+import { updateBlog, deleteBlog } from '../reducers/blogReducer'
 import { useNotification } from '../hooks'
 
 const Blog = ({ blog, user }) => {
@@ -38,7 +38,7 @@ const Blog = ({ blog, user }) => {
     handleUpdate(id, { likes: likes + 1 })
   }
 
-  const deleteBlog = () => {
+  const handleDelete = () => {
     if (window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
       try {
         dispatch(deleteBlog(id))
@@ -65,7 +65,7 @@ const Blog = ({ blog, user }) => {
         </div>
         {blogUser.name}
         {blogUser.name === user.name && (
-          <button onClick={deleteBlog} style={{ display: 'block' }}>
+          <button onClick={handleDelete} style={{ display: 'block' }}>
             remove
           </button>
         )}
@@ -77,8 +77,6 @@ const Blog = ({ blog, user }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  handleUpdate: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Blog

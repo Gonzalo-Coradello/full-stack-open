@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useField } from '../hooks'
 import { useDispatch } from 'react-redux'
 import { login } from '../reducers/userReducer'
@@ -41,10 +40,6 @@ const LoginForm = () => {
       <button type="submit">login</button>
     </form>
   )
-}
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
 }
 
 export default LoginForm

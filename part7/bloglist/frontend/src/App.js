@@ -19,8 +19,8 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    dispatch(initializeUser)
-    dispatch(initializeBlogs)
+    dispatch(initializeUser())
+    dispatch(initializeBlogs())
   }, [])
 
   const handleLogout = (e) => {
