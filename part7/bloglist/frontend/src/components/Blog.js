@@ -21,9 +21,6 @@ const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
 
   const showWhenVisible = { display: visible ? '' : 'none' }
 
-  // Note: I implemented the update functionality on the backend so that it
-  // mantains the original information and only updates the data that we pass it.
-  // I used the spread operator { ...originalBlog, newData }
   const addLike = () => {
     handleUpdate(id, { likes: likes + 1 })
   }
@@ -59,7 +56,6 @@ const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
   )
 }
 
-// blog, user, handleUpdate, handleDelete
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,

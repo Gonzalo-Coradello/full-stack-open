@@ -7,12 +7,12 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { useNotification } from './hooks'
 
 const App = () => {
+  const { setSuccessNotification, setErrorNotification } = useNotification()
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [notificationStatus, setNotificationStatus] = useState('success')
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -38,15 +38,9 @@ const App = () => {
       blogService.setToken(user.token)
       window.localStorage.setItem('user', JSON.stringify(user))
       setUser(user)
-      setNotificationMessage(`${user.name} logged in`)
+      setSuccessNotification(`${user.name} logged in`)
     } catch (exception) {
-      setNotificationStatus('error')
-      setNotificationMessage('Wrong credentials')
-    } finally {
-      setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationStatus('success')
-      }, 5000)
+      setErrorNotification('Wrong credentials')
     }
   }
 
@@ -55,10 +49,7 @@ const App = () => {
     const name = user.name
     window.localStorage.removeItem('user')
     setUser(null)
-    setNotificationMessage(`${name} logged out`)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
+    setSuccessNotification(`${name} logged out`)
   }
 
   const createBlog = async (data) => {
@@ -66,17 +57,11 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       const newBlog = await blogService.create(data)
       setBlogs((prev) => prev.concat(newBlog))
-      setNotificationMessage(
+      setSuccessNotification(
         `New blog "${newBlog.title}" by ${newBlog.author} created`,
       )
     } catch (exception) {
-      setNotificationStatus('error')
-      setNotificationMessage(exception.response.data.error)
-    } finally {
-      setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationStatus('success')
-      }, 5000)
+      setErrorNotification(exception.response.data.error)
     }
   }
 
@@ -86,15 +71,8 @@ const App = () => {
       setBlogs((prev) =>
         prev.map((blog) => (blog.id === id ? updatedBlog : blog)),
       )
-      // setNotificationMessage(`Blog "${updatedBlog.title}" by ${updatedBlog.author} updated`)
     } catch (exception) {
-      setNotificationStatus('error')
-      setNotificationMessage(exception.response.data.error)
-    } finally {
-      setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationStatus('success')
-      }, 5000)
+      setErrorNotification(exception.response.data.error)
     }
   }
 
@@ -102,25 +80,16 @@ const App = () => {
     try {
       await blogService.deleteBlog(id)
       setBlogs((prev) => prev.filter((b) => b.id !== id))
-      setNotificationMessage('Blog deleted')
+      setSuccessNotification('Blog deleted')
     } catch (exception) {
-      setNotificationStatus('error')
-      setNotificationMessage(exception.response.data.error)
-    } finally {
-      setTimeout(() => {
-        setNotificationMessage(null)
-        setNotificationStatus('success')
-      }, 5000)
+      setErrorNotification(exception.response.data.error)
     }
   }
 
   if (user === null) {
     return (
       <div>
-        <Notification
-          status={notificationStatus}
-          message={notificationMessage}
-        />
+        <Notification />
         <h2>Log in</h2>
         <LoginForm handleLogin={handleLogin} />
       </div>
@@ -129,7 +98,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification status={notificationStatus} message={notificationMessage} />
+      <Notification />
       <h2>blogs</h2>
       {user && (
         <div>
