@@ -1,38 +1,26 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useField } from '../hooks'
 
 const LoginForm = ({ handleLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const { reset: resetUsername, ...username } = useField('text')
+  const { reset: resetPassword, ...password } = useField('text')
 
   const login = (e) => {
     e.preventDefault()
-    handleLogin({ username, password })
-    setUsername('')
-    setPassword('')
+    handleLogin({ username: username.value, password: password.value })
+    resetUsername()
+    resetPassword()
   }
 
   return (
     <form onSubmit={login}>
       <div>
         username
-        <input
-          id="username"
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
+        <input id="username" name="Username" {...username} />
       </div>
       <div>
         password
-        <input
-          id="password"
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
+        <input id="password" name="Password" {...password} />
       </div>
       <button type="submit">login</button>
     </form>

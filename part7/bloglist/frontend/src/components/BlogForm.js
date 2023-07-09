@@ -1,50 +1,40 @@
-import { useState } from 'react'
+import { useField } from '../hooks'
 
 const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const { reset: resetTitle, ...title } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetUrl, ...url } = useField('text')
+
+  const resetFields = () => {
+    resetTitle('')
+    resetAuthor('')
+    resetUrl('')
+  }
 
   const addBlog = (e) => {
     e.preventDefault()
-    const blogData = { title, author, url }
+    const blogData = {
+      title: title.value,
+      author: author.value,
+      url: url.value,
+    }
     createBlog(blogData)
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    resetFields()
   }
 
   return (
     <form onSubmit={addBlog}>
       <div>
         title
-        <input
-          type="text"
-          value={title}
-          name="Title"
-          placeholder="write blog title here"
-          onChange={({ target }) => setTitle(target.value)}
-        />
+        <input name="Title" placeholder="write blog title here" {...title} />
       </div>
       <div>
         author
-        <input
-          type="text"
-          value={author}
-          name="Author"
-          placeholder="John Doe"
-          onChange={({ target }) => setAuthor(target.value)}
-        />
+        <input name="Author" placeholder="John Doe" {...author} />
       </div>
       <div>
         url
-        <input
-          type="text"
-          value={url}
-          name="Url"
-          placeholder="https://yoursite.com"
-          onChange={({ target }) => setUrl(target.value)}
-        />
+        <input name="Url" placeholder="https://yoursite.com" {...url} />
       </div>
       <button type="submit">create</button>
     </form>
