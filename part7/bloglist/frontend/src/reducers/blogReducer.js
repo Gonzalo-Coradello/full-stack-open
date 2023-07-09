@@ -33,8 +33,12 @@ export const initializeBlogs = () => {
 
 export const createBlog = (blog) => {
   return async (dispatch) => {
-    const newBlog = await blogService.create(blog)
-    dispatch(add(newBlog))
+    try {
+      const newBlog = await blogService.create(blog)
+      dispatch(add(newBlog))
+    } catch (exception) {
+      return exception.response.data.error
+    }
   }
 }
 

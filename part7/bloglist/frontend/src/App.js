@@ -1,8 +1,6 @@
 import './index.css'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
@@ -15,13 +13,14 @@ import {
   updateBlog,
   deleteBlog,
 } from './reducers/blogReducer'
+import { setUser, login, removeUser } from './reducers/userReducer'
 
 const App = () => {
-  const blogs = useSelector((state) => state.blogs)
+  const blogs = useSelector(({ blogs }) => blogs)
+  const user = useSelector(({ user }) => user)
   const { setSuccessNotification, setErrorNotification } = useNotification()
 
   const dispatch = useDispatch()
-  const [user, setUser] = useState(null)
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -32,19 +31,19 @@ const App = () => {
     const loggedUser = window.localStorage.getItem('user')
     if (loggedUser) {
       const user = JSON.parse(loggedUser)
-      setUser(user)
-      blogService.setToken(user.token)
+      dispatch(setUser(user))
     }
   }, [])
 
   const handleLogin = async (data) => {
     try {
-      const user = await loginService.login(data)
-      blogService.setToken(user.token)
-      window.localStorage.setItem('user', JSON.stringify(user))
-      setUser(user)
-      setSuccessNotification(`${user.name} logged in`)
+      const error = await dispatch(login(data))
+      if (error) {
+        return setErrorNotification('Wrong credentials')
+      }
+      setSuccessNotification('Logged in successfully')
     } catch (exception) {
+      console.log(exception)
       setErrorNotification('Wrong credentials')
     }
   }
@@ -52,20 +51,22 @@ const App = () => {
   const handleLogout = (e) => {
     e.preventDefault()
     const name = user.name
-    window.localStorage.removeItem('user')
-    setUser(null)
+    dispatch(removeUser())
     setSuccessNotification(`${name} logged out`)
   }
 
   const handleCreate = async (data) => {
     try {
       blogFormRef.current.toggleVisibility()
-      dispatch(createBlog(data))
+      const error = await dispatch(createBlog(data))
+      if (error) {
+        return setErrorNotification(error)
+      }
       setSuccessNotification(
         `New blog "${data.title}" by ${data.author} created`,
       )
     } catch (exception) {
-      setErrorNotification(exception.response.data.error)
+      setErrorNotification(exception.message)
     }
   }
 
@@ -73,7 +74,7 @@ const App = () => {
     try {
       dispatch(updateBlog(id, data))
     } catch (exception) {
-      setErrorNotification(exception.response.data.error)
+      setErrorNotification(exception.message)
     }
   }
 
@@ -82,7 +83,7 @@ const App = () => {
       dispatch(deleteBlog(id))
       setSuccessNotification('Blog deleted')
     } catch (exception) {
-      setErrorNotification(exception.response.data.error)
+      setErrorNotification(exception.message)
     }
   }
 
