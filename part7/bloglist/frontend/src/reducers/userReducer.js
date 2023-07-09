@@ -32,4 +32,14 @@ export const login = (credentials) => {
   }
 }
 
+export const initializeUser = () => {
+  return async (dispatch) => {
+    const loggedUser = window.localStorage.getItem('user')
+    if (loggedUser) {
+      const user = JSON.parse(loggedUser)
+      dispatch(setUser(user))
+    }
+  }
+}
+
 export default userSlice.reducer

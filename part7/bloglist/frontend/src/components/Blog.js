@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { updateBlog } from '../reducers/blogReducer'
+import { useNotification } from '../hooks'
 
-const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
+const Blog = ({ blog, user }) => {
+  const dispatch = useDispatch()
+  const { setSuccessNotification, setErrorNotification } = useNotification()
   const { id, title, author, likes, url } = blog
   const blogUser = blog.user
 
@@ -21,13 +26,26 @@ const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
 
   const showWhenVisible = { display: visible ? '' : 'none' }
 
+  const handleUpdate = async (id, data) => {
+    try {
+      dispatch(updateBlog(id, data))
+    } catch (exception) {
+      setErrorNotification(exception.message)
+    }
+  }
+
   const addLike = () => {
     handleUpdate(id, { likes: likes + 1 })
   }
 
   const deleteBlog = () => {
     if (window.confirm(`Do you want to remove blog ${title} by ${author}?`)) {
-      handleDelete(id)
+      try {
+        dispatch(deleteBlog(id))
+        setSuccessNotification('Blog deleted')
+      } catch (exception) {
+        setErrorNotification(exception.message)
+      }
     }
   }
 

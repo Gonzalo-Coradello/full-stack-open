@@ -1,6 +1,10 @@
-import { useField } from '../hooks'
+import { useDispatch } from 'react-redux'
+import { useField, useNotification } from '../hooks'
+import { createBlog } from '../reducers/blogReducer'
 
-const BlogForm = ({ handleCreate }) => {
+const BlogForm = ({ blogFormRef }) => {
+  const dispatch = useDispatch()
+  const { setSuccessNotification, setErrorNotification } = useNotification()
   const { reset: resetTitle, ...title } = useField('text')
   const { reset: resetAuthor, ...author } = useField('text')
   const { reset: resetUrl, ...url } = useField('text')
@@ -11,15 +15,26 @@ const BlogForm = ({ handleCreate }) => {
     resetUrl('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const blogData = {
-      title: title.value,
-      author: author.value,
-      url: url.value,
+    try {
+      const data = {
+        title: title.value,
+        author: author.value,
+        url: url.value,
+      }
+      blogFormRef.current.toggleVisibility()
+      resetFields()
+      const error = await dispatch(createBlog(data))
+      if (error) {
+        return setErrorNotification(error)
+      }
+      setSuccessNotification(
+        `New blog "${data.title}" by ${data.author} created`,
+      )
+    } catch (exception) {
+      setErrorNotification(exception.message)
     }
-    handleCreate(blogData)
-    resetFields()
   }
 
   return (
