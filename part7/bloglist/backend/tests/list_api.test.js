@@ -22,8 +22,10 @@ beforeEach(async () => {
 
   await Blog.deleteMany({}).set('Authorization', `Bearer ${token}`)
 
-  const blogObjects = helper.initialBlogs.map(blog => new Blog({ ...blog, user: user._id }))
-  const promiseArray = blogObjects.map(blog => blog.save())
+  const blogObjects = helper.initialBlogs.map(
+    (blog) => new Blog({ ...blog, user: user._id }),
+  )
+  const promiseArray = blogObjects.map((blog) => blog.save())
   await Promise.all(promiseArray)
 }, 100000)
 
@@ -50,7 +52,7 @@ describe('when there is initially some blogs saved', () => {
     const response = await api.get('/api/blogs')
 
     const blogsWithoutId = response.body.map(
-      ({ title, author, url, likes }) => ({ title, author, url, likes })
+      ({ title, author, url, likes }) => ({ title, author, url, likes }),
     )
 
     expect(blogsWithoutId).toContainEqual(helper.initialBlogs[0])
@@ -160,7 +162,7 @@ describe('addition of a new blog', () => {
       .send(helper.newBlog)
       .set(
         'Authorization',
-        'Bearer keJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdvbnphbG9jIiwiaWQiOiI2NDkxOWQ3ZGEwNTA0ZWQ1MjEwNzRlNjYiLCJpYXQiOjE2ODcyNjY5NDV9.O1-5RCLNtEHLewjihXmSwRLZIXkE9EI9xTPSYThFA2A'
+        'Bearer keJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdvbnphbG9jIiwiaWQiOiI2NDkxOWQ3ZGEwNTA0ZWQ1MjEwNzRlNjYiLCJpYXQiOjE2ODcyNjY5NDV9.O1-5RCLNtEHLewjihXmSwRLZIXkE9EI9xTPSYThFA2A',
       )
       .expect(401)
 

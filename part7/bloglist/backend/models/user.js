@@ -8,14 +8,14 @@ const userSchema = new mongoose.Schema({
     minLength: 3,
     unique: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return /^\w+$/.test(v)
       },
-      message: props => `${props.value} is not a valid username`
-    }
+      message: (props) => `${props.value} is not a valid username`,
+    },
   },
   name: {
-    type: String
+    type: String,
   },
   password: {
     type: String,
@@ -25,9 +25,9 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Blog',
-      default: []
-    }
-  ]
+      default: [],
+    },
+  ],
 })
 
 userSchema.plugin(uniqueValidator)
@@ -38,7 +38,7 @@ userSchema.set('toJSON', {
     delete returnedObject._id
     delete returnedObject.__v
     delete returnedObject.password
-  }
+  },
 })
 
 const User = mongoose.model('User', userSchema)

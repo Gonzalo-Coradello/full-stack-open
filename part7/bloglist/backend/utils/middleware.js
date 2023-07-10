@@ -33,17 +33,17 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
-  if(authorization && authorization.startsWith('Bearer ')) {
+  if (authorization && authorization.startsWith('Bearer ')) {
     request.token = authorization.replace('Bearer ', '')
-  } 
-  
+  }
+
   next()
 }
 
 const userExtractor = async (request, response, next) => {
   const decodedToken = jwt.verify(request.token, config.JWT_SECRET)
 
-  if(!decodedToken.id) {
+  if (!decodedToken.id) {
     return response.status(401).json({ error: 'invalid token' })
   }
 
@@ -58,5 +58,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
-  userExtractor
+  userExtractor,
 }
