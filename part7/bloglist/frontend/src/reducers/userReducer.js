@@ -15,20 +15,20 @@ const userSlice = createSlice({
     setUser(state, action) {
       const user = action.payload
       blogService.setToken(user.token)
-      return { loggedUser: user }
+      state.loggedUser = user
     },
-    removeUser() {
+    removeUser(state) {
       window.localStorage.removeItem('user')
-      return { loggedUser: null }
+      state.loggedUser = null
     },
-    getAll(state, action) {
+    setUserList(state, action) {
       const users = action.payload
-      return { users }
+      state.users = users
     },
   },
 })
 
-export const { setUser, removeUser, getAll } = userSlice.actions
+export const { setUser, removeUser, setUserList } = userSlice.actions
 
 export const login = (credentials) => {
   return async (dispatch) => {
@@ -55,7 +55,7 @@ export const initializeUser = () => {
 export const getAllUsers = () => {
   return async (dispatch) => {
     const users = await userService.getAll()
-    dispatch(getAll(users))
+    dispatch(setUserList(users))
   }
 }
 
