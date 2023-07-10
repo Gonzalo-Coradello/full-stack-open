@@ -9,6 +9,7 @@ import { Routes, Route } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import Header from './components/Header'
+import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -26,9 +27,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
         <Route path="/users" element={<UserList />} />
+        <Route path="/users/:id" element={<User />} />
         {/* <Route path='/register' element={<RegisterForm />} /> */}
         {/* <Route path='/blogs/:id' element={<Blogs />} /> */}
-        {/* <Route path='/users/:id' element={<Users />} /> */}
       </Routes>
     </div>
   )
