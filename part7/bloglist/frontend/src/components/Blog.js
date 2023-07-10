@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateBlog, deleteBlog } from '../reducers/blogReducer'
 import { useNotification } from '../hooks'
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const dispatch = useDispatch()
+  const user = useSelector(({ users }) => users.loggedUser)
   const { setSuccessNotification, setErrorNotification } = useNotification()
   const { id, title, author, likes, url } = blog
   const blogUser = blog.user
@@ -76,7 +77,6 @@ const Blog = ({ blog, user }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 }
 
 export default Blog

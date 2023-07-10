@@ -1,63 +1,35 @@
 import './index.css'
-import { useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import { useEffect } from 'react'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import { useNotification } from './hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
-import { removeUser, initializeUser } from './reducers/userReducer'
+import { initializeUser } from './reducers/userReducer'
+import { Routes, Route } from 'react-router-dom'
+import BlogList from './components/BlogList'
+import UserList from './components/UserList'
+import Header from './components/Header'
 
 const App = () => {
-  const blogs = useSelector(({ blogs }) => blogs)
-  const user = useSelector(({ user }) => user)
-  const { setSuccessNotification } = useNotification()
-
   const dispatch = useDispatch()
-  const blogFormRef = useRef()
+  const user = useSelector(({ users }) => users.loggedUser)
 
   useEffect(() => {
     dispatch(initializeUser())
     dispatch(initializeBlogs())
   }, [])
 
-  const handleLogout = (e) => {
-    e.preventDefault()
-    const name = user.name
-    dispatch(removeUser())
-    setSuccessNotification(`${name} logged out`)
-  }
-
-  if (user === null) {
-    return (
-      <div>
-        <Notification />
-        <h2>Log in</h2>
-        <LoginForm />
-      </div>
-    )
-  }
-
   return (
     <div>
+      <Header />
       <Notification />
-      <h2>blogs</h2>
-      {user && (
-        <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
-        </div>
-      )}
-      <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm blogFormRef={blogFormRef} />
-      </Togglable>
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} user={user} />
-        ))}
+      <Routes>
+        <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
+        <Route path="/users" element={<UserList />} />
+        {/* <Route path='/register' element={<RegisterForm />} /> */}
+        {/* <Route path='/blogs/:id' element={<Blogs />} /> */}
+        {/* <Route path='/users/:id' element={<Users />} /> */}
+      </Routes>
     </div>
   )
 }

@@ -28,17 +28,20 @@ const LoginForm = () => {
   }
 
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input id="username" name="Username" {...username} />
-      </div>
-      <div>
-        password
-        <input id="password" name="Password" {...password} />
-      </div>
-      <button type="submit">login</button>
-    </form>
+    <div>
+      <h2>Log in</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          username
+          <input id="username" name="Username" {...username} />
+        </div>
+        <div>
+          password
+          <input id="password" name="Password" {...password} />
+        </div>
+        <button type="submit">login</button>
+      </form>
+    </div>
   )
 }
 
