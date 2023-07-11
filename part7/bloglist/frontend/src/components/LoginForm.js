@@ -3,6 +3,13 @@ import { useDispatch } from 'react-redux'
 import { login } from '../reducers/userReducer'
 import { useNotification } from '../hooks'
 import { Link } from 'react-router-dom'
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link as MaterialLink,
+} from '@mui/material'
 
 const LoginForm = () => {
   const dispatch = useDispatch()
@@ -29,21 +36,50 @@ const LoginForm = () => {
   }
 
   return (
-    <div>
-      <h2>Log in</h2>
+    <Box display="grid" justifyContent="center">
+      <Typography variant="h3" my={3} textAlign="center">
+        Sign in
+      </Typography>
       <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input id="username" name="Username" {...username} />
-        </div>
-        <div>
-          password
-          <input id="password" name="Password" {...password} />
-        </div>
-        <button type="submit">login</button>
+        <Box display="grid" gap={2}>
+          <div>
+            <TextField
+              id="username"
+              name="Username"
+              label="username"
+              {...username}
+            />
+          </div>
+          <div>
+            <TextField
+              id="password"
+              name="Password"
+              label="password"
+              type="password"
+              {...password}
+            />
+          </div>
+          <Button
+            sx={{ display: 'block', marginInline: 'auto' }}
+            type="submit"
+            variant="contained"
+            color="primary"
+          >
+            login
+          </Button>
+        </Box>
       </form>
-      <Link to="/register">register</Link>
-    </div>
+      <MaterialLink
+        variant="body1"
+        component={Link}
+        underline="none"
+        to="/register"
+        textAlign="center"
+        mt={2}
+      >
+        Sign up
+      </MaterialLink>
+    </Box>
   )
 }
 

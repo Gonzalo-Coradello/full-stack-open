@@ -12,6 +12,7 @@ import Header from './components/Header'
 import User from './components/User'
 import BlogDetail from './components/BlogDetail'
 import RegisterForm from './components/RegisterForm'
+import { Container } from '@mui/material'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -23,7 +24,7 @@ const App = () => {
   }, [])
 
   return (
-    <div>
+    <Container>
       <Header />
       <Notification />
       <Routes>
@@ -33,7 +34,7 @@ const App = () => {
         <Route path="/users/:id" element={<User />} />
         <Route path="/register" element={<RegisterForm />} />
       </Routes>
-    </div>
+    </Container>
   )
 }
 

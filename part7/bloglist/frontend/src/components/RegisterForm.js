@@ -2,7 +2,14 @@ import { useField } from '../hooks'
 import { useDispatch } from 'react-redux'
 import { registerUser } from '../reducers/userReducer'
 import { useNotification } from '../hooks'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link as MaterialLink,
+} from '@mui/material'
 
 const RegisterForm = () => {
   const dispatch = useDispatch()
@@ -37,24 +44,53 @@ const RegisterForm = () => {
   }
 
   return (
-    <div>
-      <h2>register</h2>
+    <Box display="grid" justifyContent="center">
+      <Typography variant="h3" my={3} textAlign="center">
+        Sign up
+      </Typography>
       <form onSubmit={handleRegister}>
-        <div>
-          full name
-          <input id="username" name="Name" {...name} />
-        </div>
-        <div>
-          username
-          <input id="username" name="Username" {...username} />
-        </div>
-        <div>
-          password
-          <input id="password" name="Password" {...password} />
-        </div>
-        <button type="submit">register</button>
+        <Box display="grid" gap={2}>
+          <div>
+            <TextField id="username" name="Name" label="name" {...name} />
+          </div>
+          <div>
+            <TextField
+              id="username"
+              name="Username"
+              label="username"
+              {...username}
+            />
+          </div>
+          <div>
+            <TextField
+              id="password"
+              name="Password"
+              label="password"
+              type="password"
+              {...password}
+            />
+          </div>
+          <Button
+            sx={{ display: 'block', marginInline: 'auto' }}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            register
+          </Button>
+        </Box>
       </form>
-    </div>
+      <MaterialLink
+        variant="body1"
+        component={Link}
+        underline="none"
+        to="/"
+        textAlign="center"
+        mt={2}
+      >
+        Sign in
+      </MaterialLink>
+    </Box>
   )
 }
 
