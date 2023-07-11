@@ -1,37 +1,49 @@
 import { useField } from '../hooks'
 import { useDispatch } from 'react-redux'
-import { login } from '../reducers/userReducer'
+import { registerUser } from '../reducers/userReducer'
 import { useNotification } from '../hooks'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { setSuccessNotification, setErrorNotification } = useNotification()
+  const { reset: resetName, ...name } = useField('text')
   const { reset: resetUsername, ...username } = useField('text')
   const { reset: resetPassword, ...password } = useField('password')
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     try {
       const error = await dispatch(
-        login({ username: username.value, password: password.value }),
+        registerUser({
+          name: name.value,
+          username: username.value,
+          password: password.value,
+        }),
       )
       if (error) {
-        return setErrorNotification('Wrong credentials')
+        return setErrorNotification(error)
       }
-      setSuccessNotification('Logged in successfully')
+      setSuccessNotification('Registered successfully')
     } catch (exception) {
-      setErrorNotification('Wrong credentials')
+      setErrorNotification(exception)
     } finally {
+      resetName()
       resetUsername()
       resetPassword()
+      navigate('/')
     }
   }
 
   return (
     <div>
-      <h2>Log in</h2>
-      <form onSubmit={handleLogin}>
+      <h2>register</h2>
+      <form onSubmit={handleRegister}>
+        <div>
+          full name
+          <input id="username" name="Name" {...name} />
+        </div>
         <div>
           username
           <input id="username" name="Username" {...username} />
@@ -40,11 +52,10 @@ const LoginForm = () => {
           password
           <input id="password" name="Password" {...password} />
         </div>
-        <button type="submit">login</button>
+        <button type="submit">register</button>
       </form>
-      <Link to="/register">register</Link>
     </div>
   )
 }
 
-export default LoginForm
+export default RegisterForm

@@ -25,10 +25,16 @@ const userSlice = createSlice({
       const users = action.payload
       state.users = users
     },
+    register(state, action) {
+      const newUser = action.payload
+      state.users.push(newUser)
+      blogService.setToken(newUser.token)
+      state.loggedUser = newUser
+    },
   },
 })
 
-export const { setUser, removeUser, setUserList } = userSlice.actions
+export const { setUser, removeUser, setUserList, register } = userSlice.actions
 
 export const login = (credentials) => {
   return async (dispatch) => {
@@ -56,6 +62,17 @@ export const getAllUsers = () => {
   return async (dispatch) => {
     const users = await userService.getAll()
     dispatch(setUserList(users))
+  }
+}
+
+export const registerUser = ({ name, username, password }) => {
+  return async (dispatch) => {
+    try {
+      const newUser = await userService.register({ name, username, password })
+      dispatch(register(newUser))
+    } catch (exception) {
+      return exception.response.data.error
+    }
   }
 }
 

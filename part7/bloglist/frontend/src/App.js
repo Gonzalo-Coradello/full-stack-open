@@ -11,6 +11,7 @@ import UserList from './components/UserList'
 import Header from './components/Header'
 import User from './components/User'
 import BlogDetail from './components/BlogDetail'
+import RegisterForm from './components/RegisterForm'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -30,7 +31,7 @@ const App = () => {
         <Route path="/blogs/:id" element={<BlogDetail />} />
         <Route path="/users" element={<UserList />} />
         <Route path="/users/:id" element={<User />} />
-        {/* <Route path='/register' element={<RegisterForm />} /> */}
+        <Route path="/register" element={<RegisterForm />} />
       </Routes>
     </div>
   )
