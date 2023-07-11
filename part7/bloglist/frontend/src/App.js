@@ -10,6 +10,7 @@ import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import Header from './components/Header'
 import User from './components/User'
+import BlogDetail from './components/BlogDetail'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -26,10 +27,10 @@ const App = () => {
       <Notification />
       <Routes>
         <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
         <Route path="/users" element={<UserList />} />
         <Route path="/users/:id" element={<User />} />
         {/* <Route path='/register' element={<RegisterForm />} /> */}
-        {/* <Route path='/blogs/:id' element={<Blogs />} /> */}
       </Routes>
     </div>
   )
