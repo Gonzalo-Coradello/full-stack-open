@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import {
+  addComment,
   deleteBlog,
   initializeBlogs,
   updateBlog,
@@ -14,6 +15,7 @@ const BlogDetail = () => {
   const blog = useSelector(({ blogs }) => blogs.find((b) => b.id === id))
   const user = useSelector(({ users }) => users.loggedUser)
   const { setSuccessNotification, setErrorNotification } = useNotification()
+  const [comment, setComment] = useState('')
 
   useEffect(() => {
     if (!blog) {
@@ -48,6 +50,11 @@ const BlogDetail = () => {
     }
   }
 
+  const handleComment = (e) => {
+    e.preventDefault()
+    dispatch(addComment(id, comment))
+  }
+
   if (!blog) return <h2>loading...</h2>
 
   return (
@@ -66,6 +73,22 @@ const BlogDetail = () => {
           remove
         </button>
       )}
+      <div>
+        <h4>comments</h4>
+        <form onSubmit={handleComment}>
+          <input
+            type="text"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <button>add comment</button>
+        </form>
+        <ul>
+          {blog.comments.map((comment) => (
+            <li key={comment}>{comment}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
