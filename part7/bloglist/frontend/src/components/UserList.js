@@ -12,6 +12,7 @@ import {
   TableRow,
   Typography,
   Link as MaterialLink,
+  Box,
 } from '@mui/material'
 
 const UserList = () => {
@@ -29,32 +30,34 @@ const UserList = () => {
       <Typography variant="h3" textAlign="center" mb={4}>
         Users
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell>Blogs created</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((u) => (
-              <TableRow key={u.id}>
-                <TableCell>
-                  <MaterialLink
-                    component={Link}
-                    to={`/users/${u.id}`}
-                    underline="hover"
-                  >
-                    {u.name}
-                  </MaterialLink>
-                </TableCell>
-                <TableCell>{u.blogs.length}</TableCell>
+      <Box maxWidth={750} mx="auto">
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>User</TableCell>
+                <TableCell>Blogs created</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow key={u.id}>
+                  <TableCell>
+                    <MaterialLink
+                      component={Link}
+                      to={`/users/${u.id}`}
+                      underline="hover"
+                    >
+                      {u.name}
+                    </MaterialLink>
+                  </TableCell>
+                  <TableCell>{u.blogs.length}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </div>
   )
 }

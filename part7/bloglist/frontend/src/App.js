@@ -26,7 +26,7 @@ const App = () => {
   return (
     <Container>
       <Header />
-      <Box paddingTop={12}>
+      <Box pt={12} pb={4}>
         <Notification />
         <Routes>
           <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
