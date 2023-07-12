@@ -12,7 +12,7 @@ import Header from './components/Header'
 import User from './components/User'
 import BlogDetail from './components/BlogDetail'
 import RegisterForm from './components/RegisterForm'
-import { Container } from '@mui/material'
+import { Container, Box } from '@mui/material'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -26,14 +26,16 @@ const App = () => {
   return (
     <Container>
       <Header />
-      <Notification />
-      <Routes>
-        <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
-        <Route path="/blogs/:id" element={<BlogDetail />} />
-        <Route path="/users" element={<UserList />} />
-        <Route path="/users/:id" element={<User />} />
-        <Route path="/register" element={<RegisterForm />} />
-      </Routes>
+      <Box paddingTop={12}>
+        <Notification />
+        <Routes>
+          <Route path="/" element={user ? <BlogList /> : <LoginForm />} />
+          <Route path="/blogs/:id" element={<BlogDetail />} />
+          <Route path="/users" element={<UserList />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/register" element={<RegisterForm />} />
+        </Routes>
+      </Box>
     </Container>
   )
 }
