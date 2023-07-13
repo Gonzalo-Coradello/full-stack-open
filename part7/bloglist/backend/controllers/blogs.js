@@ -105,4 +105,23 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
   response.json(updatedBlog)
 })
 
+blogsRouter.put('/:id/likes', async (request, response) => {
+  const id = request.params.id
+
+  const blogToUpdate = await Blog.findOne({ _id: id })
+
+  if (!blogToUpdate) {
+    return response.status(404).end()
+  }
+
+  const newBlog = {
+    ...blogToUpdate.doc,
+    likes: blogToUpdate.likes + 1,
+  }
+
+  let updatedBlog = await Blog.findByIdAndUpdate(id, newBlog, { new: true })
+  updatedBlog = await updatedBlog.populate('user')
+  response.json(updatedBlog)
+})
+
 module.exports = blogsRouter
