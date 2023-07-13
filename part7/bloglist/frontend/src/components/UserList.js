@@ -23,7 +23,12 @@ const UserList = () => {
     dispatch(getAllUsers())
   }, [])
 
-  if (!users) return <h2>Loading...</h2>
+  if (!users)
+    return (
+      <Box display="grid" justifyContent="center" mt={12}>
+        <Typography variant="h5">Loading...</Typography>
+      </Box>
+    )
 
   return (
     <div>

@@ -1,8 +1,14 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getAllUsers } from '../reducers/userReducer'
-
+import {
+  Box,
+  List,
+  ListItem,
+  Typography,
+  Link as MaterialLink,
+} from '@mui/material'
 const User = () => {
   const dispatch = useDispatch()
   const id = useParams().id
@@ -14,17 +20,38 @@ const User = () => {
     }
   }, [])
 
-  if (!user) return <h2>loading...</h2>
+  if (!user)
+    return (
+      <Box display="grid" justifyContent="center" mt={12}>
+        <Typography variant="h5">Loading...</Typography>
+      </Box>
+    )
+
   return (
-    <div>
-      <h2>{user.name}</h2>
-      <h3>added blogs</h3>
-      <ul>
+    <Box display="grid" justifyContent="center">
+      <Typography textAlign="center" variant="h3" fontSize={36} mb={4}>
+        {user.name}
+      </Typography>
+      <Typography variant="h5">Added blogs</Typography>
+      <List dense sx={{ pl: 2 }}>
         {user.blogs.map((blog) => (
-          <li key={blog.id}>{blog.title}</li>
+          <ListItem
+            key={blog.id}
+            sx={{ display: 'list-item', listStyleType: 'disc', pl: 1 }}
+          >
+            <Typography variant="body1">
+              <MaterialLink
+                component={Link}
+                to={`/blogs/${blog.id}`}
+                underline="hover"
+              >
+                {blog.title}
+              </MaterialLink>
+            </Typography>
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Box>
   )
 }
 

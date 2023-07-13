@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   addComment,
+  addLike,
   deleteBlog,
   initializeBlogs,
-  updateBlog,
 } from '../reducers/blogReducer'
 import { useNotification } from '../hooks'
 import {
@@ -20,6 +20,7 @@ import {
 
 const BlogDetail = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const id = useParams().id
   const blog = useSelector(({ blogs }) => blogs.find((b) => b.id === id))
   const user = useSelector(({ users }) => users.loggedUser)
@@ -32,15 +33,15 @@ const BlogDetail = () => {
     }
   }, [])
 
-  const handleUpdate = async (id, data) => {
+  const handleUpdate = (id, data) => {
     try {
-      dispatch(updateBlog(id, data))
+      dispatch(addLike(id, data))
     } catch (exception) {
       setErrorNotification(exception.message)
     }
   }
 
-  const addLike = () => {
+  const handleLike = () => {
     handleUpdate(id, { likes: blog.likes + 1 })
   }
 
@@ -53,6 +54,7 @@ const BlogDetail = () => {
       try {
         dispatch(deleteBlog(id))
         setSuccessNotification('Blog deleted')
+        navigate('/')
       } catch (exception) {
         setErrorNotification(exception.message)
       }
@@ -106,7 +108,7 @@ const BlogDetail = () => {
         <Typography variant="subtitle1" lineHeight={2}>
           {blog.likes} likes
         </Typography>
-        <Button variant="contained" size="small" onClick={addLike}>
+        <Button variant="contained" size="small" onClick={handleLike}>
           like
         </Button>
         {blog.user.name === user.name && (

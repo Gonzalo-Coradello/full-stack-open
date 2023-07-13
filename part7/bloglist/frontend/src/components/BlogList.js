@@ -3,11 +3,26 @@ import Blog from './Blog'
 import BlogForm from './BlogForm'
 import Togglable from './Togglable'
 import { useRef } from 'react'
-import { Box, Paper, Table, TableContainer, Typography } from '@mui/material'
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  Typography,
+} from '@mui/material'
 
 const BlogList = () => {
   const blogs = useSelector(({ blogs }) => blogs)
   const blogFormRef = useRef()
+
+  if (!blogs) {
+    return (
+      <Box display="grid" justifyContent="center" mt={12}>
+        <Typography variant="h5">Loading...</Typography>
+      </Box>
+    )
+  }
 
   return (
     <div>
@@ -20,11 +35,13 @@ const BlogList = () => {
       <Box maxWidth={650} mx="auto" mt={2}>
         <TableContainer component={Paper}>
           <Table>
-            {[...blogs]
-              .sort((a, b) => b.likes - a.likes)
-              .map((blog) => (
-                <Blog key={blog.id} blog={blog} />
-              ))}
+            <TableBody>
+              {[...blogs]
+                .sort((a, b) => b.likes - a.likes)
+                .map((blog) => (
+                  <Blog key={blog.id} blog={blog} />
+                ))}
+            </TableBody>
           </Table>
         </TableContainer>
       </Box>
