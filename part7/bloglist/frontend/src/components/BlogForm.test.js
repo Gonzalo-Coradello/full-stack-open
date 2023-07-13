@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import BlogForm from './BlogForm'
 
+// Unit tests are not updated
+
 describe('<BlogForm />', () => {
   test('the event handler is called with the right details', async () => {
     const createBlog = jest.fn()
