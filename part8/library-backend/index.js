@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const Book = require('./models/book')
 const Author = require('./models/author')
+const { GraphQLError } = require('graphql')
 
 require('dotenv').config()
 
@@ -171,15 +172,49 @@ const resolvers = {
 
       if (author) {
         const book = new Book({ ...args, author: author._id || author.id })
-        return book.save()
+
+        try {
+          return book.save()
+        } catch (error) {
+          throw new GraphQLError('Saving book failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.title,
+              error,
+            },
+          })
+        }
       } else {
         const newAuthor = new Author({ name: args.author })
-        await newAuthor.save()
+
+        try {
+          await newAuthor.save()
+        } catch (error) {
+          throw new GraphQLError('Saving book author failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error,
+            },
+          })
+        }
+
         const book = new Book({
           ...args,
           author: newAuthor._id || newAuthor.id,
         })
-        return book.save()
+
+        try {
+          return book.save()
+        } catch (error) {
+          throw new GraphQLError('Saving book failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.title,
+              error,
+            },
+          })
+        }
       }
     },
     editAuthor: async (root, args) => {
@@ -187,7 +222,18 @@ const resolvers = {
       if (!author) return null
 
       author.born = args.setBornTo
-      return author.save()
+
+      try {
+        return author.save()
+      } catch (error) {
+        throw new GraphQLError('Editing author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+            error,
+          },
+        })
+      }
     },
   },
 }
