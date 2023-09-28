@@ -13,6 +13,7 @@ import {
   createHttpLink,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import Recommend from './components/Recommend'
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('user-token')
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: '/add',
         element: <NewBook />,
+      },
+      {
+        path: '/recommend',
+        element: <Recommend />,
       },
     ],
   },

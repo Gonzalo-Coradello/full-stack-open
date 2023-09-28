@@ -28,6 +28,7 @@ const App = () => {
         <Link to='/authors'>authors</Link>
         <Link to='/books'>books</Link>
         <Link to='/add'>add book</Link>
+        <Link to='/recommend'>recommend</Link>
         <button onClick={logout}>logout</button>
       </nav>
       {token ? (
