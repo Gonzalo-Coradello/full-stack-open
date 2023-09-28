@@ -3,6 +3,8 @@ const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
 const jwt = require('jsonwebtoken')
+const { PubSub } = require('graphql-subscriptions')
+const pubsub = new PubSub()
 
 const resolvers = {
   Query: {
@@ -38,7 +40,6 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args, context) => {
-      console.log(context.currentUser)
       if (!context.currentUser) {
         throw new GraphQLError('Unauthorized', {
           extensions: {
@@ -53,7 +54,7 @@ const resolvers = {
         const book = new Book({ ...args, author: author._id || author.id })
 
         try {
-          return book.save()
+          await book.save()
         } catch (error) {
           throw new GraphQLError('Saving book failed', {
             extensions: {
@@ -63,6 +64,9 @@ const resolvers = {
             },
           })
         }
+
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        return book
       } else {
         const newAuthor = new Author({ name: args.author })
 
@@ -84,7 +88,7 @@ const resolvers = {
         })
 
         try {
-          return book.save()
+          await book.save()
         } catch (error) {
           throw new GraphQLError('Saving book failed', {
             extensions: {
@@ -94,6 +98,9 @@ const resolvers = {
             },
           })
         }
+
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        return book
       }
     },
     editAuthor: async (root, args, context) => {
@@ -155,6 +162,11 @@ const resolvers = {
       }
 
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
   },
 }
