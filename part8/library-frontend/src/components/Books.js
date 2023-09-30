@@ -1,12 +1,11 @@
 import { useQuery } from '@apollo/client'
-import { ALL_BOOKS, ALL_BOOKS_GENRES } from '../queries'
+import { ALL_BOOKS } from '../queries'
 import { useState } from 'react'
 
 const Books = props => {
   const [genre, setGenre] = useState(null)
 
-  const { data: bookGenres, loading: loadingBookGenres } =
-    useQuery(ALL_BOOKS_GENRES)
+  const { data: allBooks, loading: loadingBookGenres } = useQuery(ALL_BOOKS)
   const { data, loading } = useQuery(ALL_BOOKS, { variables: { genre } })
 
   if (loading || loadingBookGenres) {
@@ -15,7 +14,7 @@ const Books = props => {
 
   const books = data.allBooks
 
-  const genres = bookGenres.allBooks
+  const genres = allBooks?.allBooks
     .flatMap(book => book.genres)
     .filter((item, idx, arr) => arr.indexOf(item) === idx)
 
