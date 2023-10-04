@@ -23,7 +23,7 @@ const parseArguments = (args: string[]): UserInput => {
   if (values.every(value => isNumber(value))) {
     const lastValue = values.pop()
 
-    return { dailyHours: values.map(value => +value), target: +lastValue }
+    return { dailyHours: values.map(value => +value), target: +lastValue! }
   } else {
     throw new Error('Provided values were not numbers!')
   }
