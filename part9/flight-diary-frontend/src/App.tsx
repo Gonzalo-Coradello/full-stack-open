@@ -1,5 +1,11 @@
+import DiaryEntries from './components/DiaryEntries';
+
 function App() {
-  return <div>Flight diary</div>;
+  return (
+    <div>
+      <DiaryEntries />
+    </div>
+  );
 }
 
 export default App;
