@@ -21,7 +21,6 @@ export default function NewDiary({ addDiary }: Props) {
       comment,
     };
 
-    console.log(newDiaryEntry);
     addDiary(newDiaryEntry as NewDiaryEntry);
   };
 

@@ -1,8 +1,8 @@
-import { NonSensitiveDiaryEntry } from '../types';
+import { NonSensitiveDiaryEntry } from "../types";
 
-type Props = {
+interface Props {
   entry: NonSensitiveDiaryEntry;
-};
+}
 
 export default function DiaryEntry({ entry }: Props) {
   return (

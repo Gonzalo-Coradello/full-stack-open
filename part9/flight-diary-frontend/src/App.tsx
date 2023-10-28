@@ -3,23 +3,44 @@ import DiaryEntries from "./components/DiaryEntries";
 import NewDiary from "./components/NewDiary";
 import diaryService from "./services/diaries";
 import { NewDiaryEntry, NonSensitiveDiaryEntry } from "./types";
+import axios from "axios";
+import Notify from "./components/Notify";
 
 function App() {
   const [entries, setEntries] = useState<NonSensitiveDiaryEntry[]>([]);
+  const [message, setMessage] = useState("");
+  const [notificationType, setNotificationType] = useState<"error" | "success">(
+    "error"
+  );
 
   useEffect(() => {
     diaryService.getAll().then((data) => setEntries(data));
   }, []);
 
   const addDiaryEntry = async (entry: NewDiaryEntry) => {
-    const newDiaryEntry: NonSensitiveDiaryEntry = await diaryService.create(
-      entry as NewDiaryEntry
-    );
-    setEntries((prev: NonSensitiveDiaryEntry[]) => prev.concat(newDiaryEntry));
+    try {
+      const newDiaryEntry: NonSensitiveDiaryEntry = await diaryService.create(
+        entry as NewDiaryEntry
+      );
+      setEntries((prev: NonSensitiveDiaryEntry[]) =>
+        prev.concat(newDiaryEntry)
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setNotificationType("error");
+        console.log(error.response?.data);
+        setMessage(error.response?.data);
+      } else {
+        console.error(error);
+        setNotificationType("error");
+        setMessage("Something went wrong");
+      }
+    }
   };
 
   return (
     <div>
+      <Notify message={message} type={notificationType} />
       <NewDiary addDiary={addDiaryEntry} />
       <DiaryEntries entries={entries} />
     </div>
