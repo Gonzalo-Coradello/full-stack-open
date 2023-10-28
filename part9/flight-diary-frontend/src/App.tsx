@@ -20,7 +20,7 @@ function App() {
   const addDiaryEntry = async (entry: NewDiaryEntry) => {
     try {
       const newDiaryEntry: NonSensitiveDiaryEntry = await diaryService.create(
-        entry as NewDiaryEntry
+        entry
       );
       setEntries((prev: NonSensitiveDiaryEntry[]) =>
         prev.concat(newDiaryEntry)
@@ -28,7 +28,6 @@ function App() {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setNotificationType("error");
-        console.log(error.response?.data);
         setMessage(error.response?.data);
       } else {
         console.error(error);
