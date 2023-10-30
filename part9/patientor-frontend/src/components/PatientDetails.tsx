@@ -6,6 +6,7 @@ import { Diagnosis, Patient } from "../types";
 import { Female, Male, Transgender } from "@mui/icons-material";
 import EntryDetails from "./Entries/EntryDetails";
 import { Box } from "@mui/material";
+import NewEntry from "./NewEntry";
 
 export default function PatientDetails() {
   const id = useParams().id;
@@ -38,6 +39,7 @@ export default function PatientDetails() {
       <p>ssn: {patient.ssn}</p>
       {patient.dateOfBirth && <p>date of birth: {patient.dateOfBirth}</p>}
       <p>occupation: {patient.occupation}</p>
+      <NewEntry />
       <div>
         <h3>entries</h3>
         {/* <div>
